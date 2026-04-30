@@ -1214,36 +1214,36 @@ function saveIllegalListToCache(domains) {
 }
 
 async function loadIllegalList() {
-  if (illegalDomainsMemory) {
-    illegalDomainsSource = "NKSC sąrašas iš atminties";
+  if (illegalDomainsMemory && illegalDomainsMemory.length) {
+    illegalDomainsSource = "Sąrašas iš atminties";
     return illegalDomainsMemory;
   }
 
   const cached = getCachedIllegalList();
   if (cached && cached.length) {
     illegalDomainsMemory = cached;
-    illegalDomainsSource = "NKSC sąrašas iš laikinos naršyklės atminties";
+    illegalDomainsSource = "Sąrašas iš naršyklės laikinos atminties";
     return cached;
   }
 
-  const response = await fetch(NKSC_PROXY_URL, {
+  const response = await fetch("./illegal_domains.txt", {
     method: "GET",
     cache: "no-store"
   });
 
   if (!response.ok) {
-    throw new Error("Nepavyko gauti NKSC sąrašo: " + response.status);
+    throw new Error("Nepavyko gauti illegal_domains.txt: " + response.status);
   }
 
   const text = await response.text();
   const domains = parseDomainList(text);
 
   if (!domains.length) {
-    throw new Error("NKSC sąrašas gautas, bet domenų nerasta.");
+    throw new Error("illegal_domains.txt tuščias arba netinkamas.");
   }
 
   illegalDomainsMemory = domains;
-  illegalDomainsSource = "Automatiškai gautas NKSC sąrašas";
+  illegalDomainsSource = "Lokalus illegal_domains.txt sąrašas";
   saveIllegalListToCache(domains);
 
   return domains;
