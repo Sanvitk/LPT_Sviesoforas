@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LPT lošimų svetainių tikrintuvas</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5A2D82">
+
+<style>
+:root {
+  --bg-1: #020814;
+  --bg-2: #071426;
+  --bg-3: #0b1c33;
+  --line: rgba(255,255,255,0.12);
+  --text: #f5f9ff;
+  --text-soft: #c7d4e4;
+  --blue: #2192ff;
+  --blue-2: #56adff;
+  --green: #27e36d;
+  --yellow: #ffc62b;
+  --red: #ff5667;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 12% 16%, rgba(33,146,255,0.16), transparent 0 28%),
+    radial-gradient(circle at 84% 18%, rgba(255,86,103,0.10), transparent 0 22%),
+    linear-gradient(135deg, var(--bg-1), var(--bg-2) 45%, var(--bg-3));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  overflow-x: hidden;
+}
+
+.app {
+  width: 100%;
+  max-width: 1040px;
+  max-height: 96vh;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025));
+  box-shadow: 0 28px 80px rgba(0,0,0,0.44);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.12);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.logo img {
+  width: 120%;
+  height: 120%;
+  object-fit: contain;
+}
+
+.brand-sub {
+  margin: 0 0 5px;
+  font-size: 12px;
+  color: var(--blue-2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: bold;
+}
+
+.brand-title {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.15;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.install-trigger {
+  min-width: auto;
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #59afff, #2192ff);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.20);
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 12px 26px rgba(33,146,255,0.28);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 15px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  font-size: 13px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.badge-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--blue);
+  box-shadow: 0 0 14px rgba(33,146,255,0.9);
+}
+
+.main {
+  display: grid;
+  grid-template-columns: 1.08fr 0.72fr;
+  gap: 18px;
+  align-items: center;
+  padding: 14px 18px 16px;
+}
+
+.left { min-width: 0; }
+
+.hero h1 {
+  margin: 0 0 8px;
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 0.92;
+  letter-spacing: -0.055em;
+  max-width: 560px;
+}
+
+.accent {
+  color: var(--green);
+  text-shadow: 0 0 14px rgba(39,227,109,0.45);
+  animation: safePulse 2.6s ease-in-out infinite;
+}
+
+.hero p {
+  max-width: 560px;
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-soft);
+}
+
+.panel {
+  border-radius: 26px;
+  background: rgba(255,255,255,0.085);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 18px 42px rgba(0,0,0,0.28);
+  padding: 16px;
+}
+
+.label {
+  display: block;
+  margin-bottom: 9px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+.input-wrap {
+  flex: 1;
+  position: relative;
+}
+
+.input-wrap::before {
+  content: "⌕";
+  position: absolute;
+  left: 17px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--blue);
+  font-size: 22px;
+}
+
+input {
+  width: 100%;
+  height: 54px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.20);
+  background: rgba(255,255,255,0.98);
+  color: #122033;
+  font-size: 17px;
+  padding: 0 18px 0 52px;
+  outline: none;
+}
+
+input:focus {
+  border-color: rgba(33,146,255,0.95);
+  box-shadow: 0 0 0 4px rgba(33,146,255,0.18);
+}
+
+button {
+  min-width: 132px;
+  height: 54px;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #59afff, #2192ff);
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 18px 34px rgba(33,146,255,0.32);
+}
+
+button:disabled {
+  opacity: 0.68;
+  cursor: wait;
+}
+
+.hints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 10px;
+}
+
+.hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+.error {
+  display: none;
+  margin-top: 10px;
+  color: #ffb6bf;
+  font-size: 14px;
+}
+
+.error.show { display: block; }
+
+.progress {
+  display: none;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.progress.show {
+  display: block;
+  animation: enter 0.25s ease forwards;
+}
+
+.progress-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.progress-percent {
+  color: #9eb8d4;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-bar {
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.10);
+}
+
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2192ff, #56adff, #9bd2ff);
+  box-shadow: 0 0 18px rgba(33,146,255,0.45);
+  transition: width 0.25s ease;
+  position: relative;
+}
+
+.progress-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent, rgba(255,255,255,0.55), transparent);
+  transform: translateX(-120%);
+  animation: shimmer 1.2s infinite;
+}
+
+.result {
+  display: none;
+  margin-top: 12px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 18px 42px rgba(0,0,0,0.28);
+}
+
+.result.show {
+  display: block;
+  animation: resultEnter 0.35s ease forwards;
+}
+
+.result.legal {
+  background: linear-gradient(180deg, rgba(39,227,109,0.12), rgba(255,255,255,0.05));
+  border-color: rgba(39,227,109,0.25);
+}
+
+.result.illegal {
+  background: linear-gradient(180deg, rgba(255,86,103,0.12), rgba(255,255,255,0.05));
+  border-color: rgba(255,86,103,0.25);
+}
+
+.result.unknown {
+  background: linear-gradient(180deg, rgba(255,198,43,0.12), rgba(255,255,255,0.05));
+  border-color: rgba(255,198,43,0.25);
+}
+
+.result-top { padding: 13px; }
+
+.result-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 9px;
+}
+
+.mini-traffic {
+  display: inline-flex;
+  gap: 9px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.mini-light {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.16);
+}
+
+.mini-light.red.active { background: var(--red); box-shadow: 0 0 18px rgba(255,86,103,0.55); }
+.mini-light.yellow.active { background: var(--yellow); box-shadow: 0 0 18px rgba(255,198,43,0.45); }
+.mini-light.green.active { background: var(--green); box-shadow: 0 0 18px rgba(39,227,109,0.45); }
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 13px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.result-main {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+.big-indicator {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  font-weight: bold;
+  margin: 0 auto;
+  border: 3px solid rgba(255,255,255,0.12);
+}
+
+.big-indicator.pop { animation: popIn 0.34s ease; }
+
+.big-green {
+  background: radial-gradient(circle at 50% 45%, #83f5ab, #27e36d 42%, #0b7b35);
+  box-shadow: 0 0 40px rgba(39,227,109,0.42);
+}
+
+.big-yellow {
+  background: radial-gradient(circle at 50% 45%, #ffe98d, #ffc62b 42%, #8f6500);
+  box-shadow: 0 0 40px rgba(255,198,43,0.40);
+}
+
+.big-red {
+  background: radial-gradient(circle at 50% 45%, #ff9ca5, #ff5667 42%, #8b1321);
+  box-shadow: 0 0 40px rgba(255,86,103,0.46);
+}
+
+.result-title {
+  margin: 0 0 5px;
+  font-size: 23px;
+  line-height: 1.1;
+}
+
+.result-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #d8e4f1;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 0 13px 13px;
+}
+
+.info-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  padding: 10px;
+}
+
+.info-label {
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9eb0c7;
+}
+
+.info-value {
+  font-size: 13px;
+  color: #f0f5fb;
+  word-break: break-word;
+}
+
+.report-line {
+  margin: 0 13px 13px;
+  padding: 11px 13px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: #d8e4f1;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.report-line a {
+  color: #56adff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.report-line a:hover {
+  text-decoration: underline;
+}
+
+.traffic-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  min-height: 330px;
+}
+
+.traffic-box {
+  width: 184px;
+  padding: 18px 16px;
+  border-radius: 34px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05));
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: 0 30px 70px rgba(0,0,0,0.34);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 13px;
+}
+
+.traffic-light {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  border: 3px solid rgba(255,255,255,0.10);
+  box-shadow: inset 0 10px 18px rgba(255,255,255,0.06), inset 0 -12px 24px rgba(0,0,0,0.20);
+  opacity: 0.26;
+  filter: saturate(0.55);
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.traffic-light::before {
+  content: "";
+  position: absolute;
+  inset: 18% 22% auto 22%;
+  height: 16%;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.14);
+  filter: blur(2px);
+}
+
+.traffic-light.red.active {
+  opacity: 1;
+  filter: saturate(1);
+  background: radial-gradient(circle at 50% 45%, #ff9ca5, #ff5667 40%, #8b1321);
+  box-shadow: 0 0 38px rgba(255,86,103,0.55), 0 0 78px rgba(255,86,103,0.18);
+}
+
+.traffic-light.yellow.active {
+  opacity: 1;
+  filter: saturate(1);
+  background: radial-gradient(circle at 50% 45%, #ffe98d, #ffc62b 40%, #8f6500);
+  box-shadow: 0 0 38px rgba(255,198,43,0.48), 0 0 78px rgba(255,198,43,0.16);
+}
+
+.traffic-light.green.active {
+  opacity: 1;
+  filter: saturate(1);
+  background: radial-gradient(circle at 50% 45%, #83f5ab, #27e36d 40%, #0b7b35);
+  box-shadow: 0 0 38px rgba(39,227,109,0.52), 0 0 78px rgba(39,227,109,0.18);
+}
+
+.traffic-light.pulse { animation: pulseGlow 1.8s infinite ease-in-out; }
+
+.install-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  background: rgba(0,0,0,0.68);
+  backdrop-filter: blur(12px);
+  padding: 18px;
+}
+
+.install-modal.show {
+  display: flex;
+  animation: fadeIn 0.22s ease forwards;
+}
+
+.install-box {
+  width: min(460px, 100%);
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: linear-gradient(180deg, rgba(12,28,52,0.96), rgba(4,12,25,0.96));
+  box-shadow: 0 30px 90px rgba(0,0,0,0.62);
+  overflow: hidden;
+}
+
+.install-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.09);
+}
+
+.install-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #59afff, #2192ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 16px 32px rgba(33,146,255,0.32);
+  font-size: 23px;
+  flex: 0 0 auto;
+}
+
+.install-title-wrap { text-align: left; }
+
+.install-title {
+  margin: 0 0 4px;
+  font-size: 19px;
+  line-height: 1.15;
+}
+
+.install-subtitle {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.install-content {
+  padding: 16px 20px 20px;
+}
+
+.install-benefits {
+  display: grid;
+  gap: 9px;
+  margin-bottom: 16px;
+}
+
+.install-benefit {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.09);
+  color: #d8e4f1;
+  font-size: 13px;
+  line-height: 1.35;
+  text-align: left;
+}
+
+.install-benefit span {
+  color: var(--green);
+  font-weight: bold;
+}
+
+.install-note {
+  display: none;
+  margin: 0 0 16px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255,198,43,0.10);
+  border: 1px solid rgba(255,198,43,0.22);
+  color: #ffe9a8;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.install-note.show { display: block; }
+
+.install-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.install-actions button {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  border-radius: 16px;
+  font-size: 14px;
+}
+
+.install-secondary {
+  background: rgba(255,255,255,0.08);
+  color: #d8e4f1;
+  box-shadow: none;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.install-close {
+  margin-left: auto;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  color: #d8e4f1;
+  box-shadow: none;
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+@keyframes safePulse {
+  0%, 100% { opacity: 0.9; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.03); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.035); }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.86); opacity: 0.2; }
+  60% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes resultEnter {
+  from { opacity: 0; transform: translateY(12px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes shimmer {
+  to { transform: translateX(120%); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-height: 760px) and (min-width: 901px) {
+  body { align-items: flex-start; }
+  .app { margin-top: 6px; }
+  .hero h1 { font-size: 42px; }
+  .hero p { font-size: 13px; }
+  .traffic-light { width: 72px; height: 72px; }
+  .traffic-box { width: 170px; gap: 11px; }
+  .big-indicator { width: 66px; height: 66px; font-size: 30px; }
+  .result-title { font-size: 21px; }
+  .result-text { font-size: 13px; }
+}
+
+@media (max-width: 900px) {
+  body { align-items: flex-start; }
+  .app { max-height: none; }
+  .main { grid-template-columns: 1fr; }
+  .traffic-side { min-height: auto; }
+  .traffic-box { flex-direction: row; width: auto; padding: 16px; border-radius: 28px; }
+  .traffic-light { width: 70px; height: 70px; }
+}
+
+@media (max-width: 760px) {
+  .header { align-items: flex-start; }
+  .header-actions { flex-direction: column; align-items: flex-end; gap: 8px; }
+  .install-trigger { height: 38px; padding: 0 13px; font-size: 12px; }
+}
+
+@media (max-width: 640px) {
+  body { padding: 8px; }
+  .header { padding: 14px; }
+  .brand-title { font-size: 16px; }
+  .badge { display: none; }
+  .main { padding: 14px; }
+  .hero h1 { font-size: 38px; }
+  .hero p { font-size: 14px; }
+  .row { flex-direction: column; }
+  button { width: 100%; }
+  .install-trigger { width: auto; min-width: 0; }
+  .result-main { grid-template-columns: 1fr; text-align: center; }
+  .result-grid { grid-template-columns: 1fr; }
+  .install-actions { flex-direction: column; }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <header class="header">
+    <div class="brand">
+      <div class="logo">
+        <img src="LPT_pagr.svg" alt="LPT logotipas" onerror="this.style.display='none'">
+      </div>
+      <div>
+        <p class="brand-sub">Lošimų priežiūros tarnyba</p>
+        <h2 class="brand-title">Oficialus azartinių lošimų svetainių tikrintuvas</h2>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button id="installTrigger" class="install-trigger" type="button">Įdiegti programėlę</button>
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Tikrink. Rinkis saugiai.
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="left">
+      <div class="hero">
+        <h1>Patikrink.<br>Lošk <span class="accent">saugiai.</span></h1>
+        <p>Įveskite svetainės adresą ir greitai sužinokite jos statusą pagal LPT ir NKSC duomenis.</p>
+      </div>
+
+      <section class="panel">
+        <label class="label" for="domainInput">Svetainės adresas</label>
+
+        <div class="row">
+          <div class="input-wrap">
+            <input
+              id="domainInput"
+              type="text"
+              placeholder="pvz. bet365.com arba https://example.com"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+          <button id="checkBtn" type="button">Tikrinti</button>
+        </div>
+
+        <div id="inputError" class="error"></div>
+
+        <div class="hints">
+          <div class="hint">✓ Oficialūs LPT sąrašai</div>
+          <div class="hint">↻ NKSC sąrašas atnaujinamas automatiškai</div>
+          <div class="hint">🛡 Patikima informacija</div>
+        </div>
+
+        <div id="progressBox" class="progress" aria-live="polite">
+          <div class="progress-top">
+            <div id="progressText">Jungiamasi prie tikrinimo sistemos...</div>
+            <div id="progressPercent" class="progress-percent">0%</div>
+          </div>
+          <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+          </div>
+        </div>
+
+        <div id="resultBox" class="result">
+          <div class="result-top">
+            <div class="result-head">
+              <div class="mini-traffic">
+                <div id="redLight" class="mini-light red"></div>
+                <div id="yellowLight" class="mini-light yellow"></div>
+                <div id="greenLight" class="mini-light green"></div>
+              </div>
+              <div id="statusChip" class="status-chip">Statusas</div>
+            </div>
+
+            <div class="result-main">
+              <div id="bigIndicator" class="big-indicator"></div>
+              <div>
+                <h2 id="resultTitle" class="result-title"></h2>
+                <p id="resultText" class="result-text"></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-grid">
+            <div class="info-card">
+              <div class="info-label">Tikrintas domenas</div>
+              <div id="checkedDomain" class="info-value">–</div>
+            </div>
+            <div class="info-card">
+              <div class="info-label">Vertinimo pagrindas</div>
+              <div id="resultBasis" class="info-value">–</div>
+            </div>
+          </div>
+
+          <div id="reportLine" class="report-line">
+            Jei įtari nelegalius azartinius lošimus – pranešk
+            <a href="mailto:info@lpt.lt">info@lpt.lt</a>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <aside class="traffic-side">
+      <div class="traffic-box">
+        <div id="heroRedLight" class="traffic-light red"></div>
+        <div id="heroYellowLight" class="traffic-light yellow active"></div>
+        <div id="heroGreenLight" class="traffic-light green"></div>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<div id="installModal" class="install-modal" aria-hidden="true">
+  <div class="install-box" role="dialog" aria-modal="true" aria-labelledby="installTitle">
+    <div class="install-head">
+      <div class="install-icon">⬇</div>
+      <div class="install-title-wrap">
+        <h2 id="installTitle" class="install-title">Įdiekite programėlę</h2>
+        <p class="install-subtitle">Patogesnis pasiekiamumas kaip atskira programa telefone arba kompiuteryje.</p>
+      </div>
+      <button id="installClose" class="install-close" type="button" aria-label="Uždaryti">×</button>
+    </div>
+
+    <div class="install-content">
+      <div class="install-benefits">
+        <div class="install-benefit"><span>✓</span> Programėlė atsidarys atskirame lange, be naršyklės triukšmo.</div>
+        <div class="install-benefit"><span>✓</span> Galėsite ją prisegti prie darbalaukio, užduočių juostos arba telefono pradžios ekrano.</div>
+        <div class="install-benefit"><span>✓</span> Jei naudojamas darbo kompiuteris, diegimą gali riboti organizacijos saugumo politika.</div>
+      </div>
+
+      <p id="installNote" class="install-note"></p>
+
+      <div class="install-actions">
+        <button id="installNow" type="button">Įdiegti dabar</button>
+        <button id="installGuide" class="install-secondary" type="button">Rodyti instrukciją</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const NKSC_URL = "https://www.nksc.lt/doc/vasaris/siena-lpt.txt";
+const NKSC_PROXY_URL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(NKSC_URL);
+const CACHE_KEY = "lpt_nksc_illegal_domains_cache_v1";
+const CACHE_TTL_MS = 12 * 60 * 60 * 1000;
+
+const LEGAL_DOMAINS = [
+  "betsafe.lt",
+  "topsport.lt",
+  "tonybet.lt",
+  "7bet.lt",
+  "uniclub.lt",
+  "olympiccasino.lt",
+  "cbet.lt",
+  "orakulas.lt",
+  "betsson.lt",
+  "optibet.lt"
+];
+
+let isChecking = false;
+let progressTimers = [];
+let deferredPrompt = null;
+let illegalDomainsMemory = null;
+let illegalDomainsSource = "NKSC sąrašas";
+
+function normalizeDomain(value) {
+  let input = String(value || "").trim().toLowerCase();
+  if (!input) return "";
+
+  input = input.replace(/\s+/g, "");
+  input = input.replace(/^https?:\/\//, "");
+  input = input.replace(/^www\./, "");
+  input = input.split("/")[0];
+  input = input.split("?")[0];
+  input = input.split("#")[0];
+  input = input.replace(/:\d+$/, "");
+
+  return input;
+}
+
+function isProbablyDomain(domain) {
+  return /^[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$/i.test(domain);
+}
+
+function getDomainVariants(domain) {
+  const clean = normalizeDomain(domain);
+  const parts = clean.split(".").filter(Boolean);
+  const variants = new Set([clean]);
+
+  if (parts.length > 2) {
+    variants.add(parts.slice(-2).join("."));
+    variants.add(parts.slice(-3).join("."));
+  }
+
+  return Array.from(variants);
+}
+
+function domainMatchesList(domain, list) {
+  const variants = getDomainVariants(domain);
+  return variants.some(d => list.includes(d));
+}
+
+function showInputError(message) {
+  const inputError = document.getElementById("inputError");
+  inputError.textContent = message;
+  inputError.classList.add("show");
+}
+
+function hideInputError() {
+  const inputError = document.getElementById("inputError");
+  inputError.textContent = "";
+  inputError.classList.remove("show");
+}
+
+function resetHeroLights() {
+  ["heroRedLight", "heroYellowLight", "heroGreenLight"].forEach(id => {
+    document.getElementById(id).classList.remove("active", "pulse");
+  });
+}
+
+function activateHeroLight(status) {
+  resetHeroLights();
+
+  if (status === "legal") {
+    document.getElementById("heroGreenLight").classList.add("active", "pulse");
+  } else if (status === "illegal") {
+    document.getElementById("heroRedLight").classList.add("active", "pulse");
+  } else {
+    document.getElementById("heroYellowLight").classList.add("active", "pulse");
+  }
+}
+
+function setIdleHeroLight() {
+  resetHeroLights();
+  document.getElementById("heroYellowLight").classList.add("active");
+}
+
+function resetMiniLights() {
+  ["redLight", "yellowLight", "greenLight"].forEach(id => {
+    document.getElementById(id).classList.remove("active");
+  });
+}
+
+function resetIndicator() {
+  const bigIndicator = document.getElementById("bigIndicator");
+  bigIndicator.className = "big-indicator";
+  bigIndicator.textContent = "";
+}
+
+function hideResult() {
+  const resultBox = document.getElementById("resultBox");
+  resultBox.className = "result";
+  resultBox.style.display = "none";
+}
+
+function clearProgressTimers() {
+  progressTimers.forEach(timer => clearTimeout(timer));
+  progressTimers = [];
+}
+
+function setProgress(percent, text) {
+  const box = document.getElementById("progressBox");
+  const fill = document.getElementById("progressFill");
+  const label = document.getElementById("progressText");
+  const percentLabel = document.getElementById("progressPercent");
+
+  box.classList.add("show");
+  fill.style.width = percent + "%";
+  label.textContent = text;
+  percentLabel.textContent = percent + "%";
+}
+
+function startProgress() {
+  clearProgressTimers();
+  setProgress(24, "Kraunamas NKSC sąrašas...");
+
+  progressTimers.push(setTimeout(() => {
+    setProgress(62, "Tikrinamas domenas sąrašuose...");
+  }, 180));
+
+  progressTimers.push(setTimeout(() => {
+    setProgress(88, "Formuojamas rezultatas...");
+  }, 420));
+}
+
+function finishProgress() {
+  clearProgressTimers();
+  setProgress(100, "Baigta");
+
+  setTimeout(() => {
+    document.getElementById("progressBox").classList.remove("show");
+    document.getElementById("progressFill").style.width = "0%";
+    document.getElementById("progressPercent").textContent = "0%";
+  }, 450);
+}
+
+function stopProgress() {
+  clearProgressTimers();
+  document.getElementById("progressBox").classList.remove("show");
+  document.getElementById("progressFill").style.width = "0%";
+  document.getElementById("progressPercent").textContent = "0%";
+}
+
+function showLoading(domain) {
+  const resultBox = document.getElementById("resultBox");
+
+  resultBox.className = "result unknown";
+  resultBox.style.display = "block";
+  void resultBox.offsetWidth;
+  resultBox.classList.add("show");
+
+  resetMiniLights();
+  resetIndicator();
+
+  document.getElementById("yellowLight").classList.add("active");
+  activateHeroLight("unknown");
+
+  document.getElementById("statusChip").textContent = "Tikrinama";
+  document.getElementById("resultTitle").textContent = "Tikrinama...";
+  document.getElementById("resultText").textContent = "Domenas tikrinamas LPT ir NKSC sąrašuose.";
+  document.getElementById("checkedDomain").textContent = domain;
+  document.getElementById("resultBasis").textContent = "Vykdoma automatinė sąrašų patikra.";
+
+  const bigIndicator = document.getElementById("bigIndicator");
+  bigIndicator.classList.add("big-yellow", "pop");
+  bigIndicator.textContent = "…";
+}
+
+function showResult(status, domain, titleText, bodyText, basisText) {
+  const resultBox = document.getElementById("resultBox");
+
+  resultBox.className = "result";
+  resultBox.style.display = "block";
+  void resultBox.offsetWidth;
+  resultBox.classList.add("show");
+
+  resetMiniLights();
+  resetIndicator();
+  activateHeroLight(status);
+
+  const statusChip = document.getElementById("statusChip");
+  const resultTitle = document.getElementById("resultTitle");
+  const resultText = document.getElementById("resultText");
+  const resultBasis = document.getElementById("resultBasis");
+  const bigIndicator = document.getElementById("bigIndicator");
+
+  document.getElementById("checkedDomain").textContent = domain || "–";
+
+  if (status === "legal") {
+    resultBox.classList.add("legal");
+    document.getElementById("greenLight").classList.add("active");
+
+    statusChip.textContent = "Legalu";
+    resultTitle.textContent = titleText || "Svetainė yra legali";
+    resultText.textContent = bodyText || "Ši svetainė rasta licencijuotų domenų sąraše.";
+    resultBasis.textContent = basisText || "Atitikmuo rastas LPT legalių domenų sąraše.";
+
+    bigIndicator.classList.add("big-green", "pop");
+    bigIndicator.textContent = "✓";
+
+  } else if (status === "illegal") {
+    resultBox.classList.add("illegal");
+    document.getElementById("redLight").classList.add("active");
+
+    statusChip.textContent = "Nelegalu";
+    resultTitle.textContent = titleText || "Svetainė yra nelegali";
+    resultText.textContent = bodyText || "Ši svetainė rasta NKSC / blokuojamų domenų sąraše. Rekomenduojame nesinaudoti šia svetaine.";
+    resultBasis.textContent = basisText || "Atitikmuo rastas nelegalių domenų sąraše.";
+
+    bigIndicator.classList.add("big-red", "pop");
+    bigIndicator.textContent = "✕";
+
+  } else {
+    resultBox.classList.add("unknown");
+    document.getElementById("yellowLight").classList.add("active");
+
+    statusChip.textContent = "Neaišku";
+    resultTitle.textContent = titleText || "Svetainės statusas neaiškus";
+    resultText.textContent = bodyText || "Pagal turimus duomenis svetainė nerasta nei legalių, nei nelegalių domenų sąrašuose.";
+    resultBasis.textContent = basisText || "Atitikmuo tikrinimo sąrašuose nerastas.";
+
+    bigIndicator.classList.add("big-yellow", "pop");
+    bigIndicator.textContent = "?";
+  }
+}
+
+function parseDomainList(text) {
+  return Array.from(new Set(
+    String(text || "")
+      .split(/\r?\n/)
+      .map(line => line.trim().toLowerCase())
+      .filter(line => line && !line.startsWith("#"))
+      .map(line => normalizeDomain(line))
+      .filter(line => isProbablyDomain(line))
+  ));
+}
+
+function getCachedIllegalList() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+
+    const cached = JSON.parse(raw);
+    if (!cached || !Array.isArray(cached.domains)) return null;
+
+    const age = Date.now() - Number(cached.savedAt || 0);
+    if (age > CACHE_TTL_MS) return null;
+
+    return cached.domains;
+  } catch (error) {
+    console.warn("Nepavyko nuskaityti cache:", error);
+    return null;
+  }
+}
+
+function saveIllegalListToCache(domains) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      savedAt: Date.now(),
+      domains
+    }));
+  } catch (error) {
+    console.warn("Nepavyko išsaugoti cache:", error);
+  }
+}
+
+async function loadIllegalList() {
+  if (illegalDomainsMemory) {
+    illegalDomainsSource = "NKSC sąrašas iš atminties";
+    return illegalDomainsMemory;
+  }
+
+  const cached = getCachedIllegalList();
+  if (cached && cached.length) {
+    illegalDomainsMemory = cached;
+    illegalDomainsSource = "NKSC sąrašas iš laikinos naršyklės atminties";
+    return cached;
+  }
+
+  const response = await fetch(NKSC_PROXY_URL, {
+    method: "GET",
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error("Nepavyko gauti NKSC sąrašo: " + response.status);
+  }
+
+  const text = await response.text();
+  const domains = parseDomainList(text);
+
+  if (!domains.length) {
+    throw new Error("NKSC sąrašas gautas, bet domenų nerasta.");
+  }
+
+  illegalDomainsMemory = domains;
+  illegalDomainsSource = "Automatiškai gautas NKSC sąrašas";
+  saveIllegalListToCache(domains);
+
+  return domains;
+}
+
+async function checkDomain() {
+  if (isChecking) return;
+
+  hideInputError();
+
+  const input = document.getElementById("domainInput").value;
+  const domain = normalizeDomain(input);
+  const checkBtn = document.getElementById("checkBtn");
+
+  if (!domain) {
+    hideResult();
+    showInputError("Įveskite svetainės adresą.");
+    setIdleHeroLight();
+    return;
+  }
+
+  if (!isProbablyDomain(domain)) {
+    hideResult();
+    showInputError("Įveskite korektišką domeną, pvz. example.com.");
+    setIdleHeroLight();
+    return;
+  }
+
+  isChecking = true;
+  checkBtn.disabled = true;
+  checkBtn.textContent = "Tikrinama...";
+
+  showLoading(domain);
+  startProgress();
+
+  try {
+    const legalMatch = domainMatchesList(domain, LEGAL_DOMAINS);
+
+    if (legalMatch) {
+      finishProgress();
+      showResult(
+        "legal",
+        domain,
+        "Svetainė yra legali",
+        "Ši svetainė rasta LPT licencijuotų domenų sąraše.",
+        "Atitikmuo rastas LPT legalių domenų sąraše."
+      );
+      return;
+    }
+
+    const illegalList = await loadIllegalList();
+    const illegalMatch = domainMatchesList(domain, illegalList);
+
+    finishProgress();
+
+    if (illegalMatch) {
+      showResult(
+        "illegal",
+        domain,
+        "Svetainė yra nelegali",
+        "Ši svetainė rasta NKSC / blokuojamų domenų sąraše. Rekomenduojame nesinaudoti šia svetaine.",
+        illegalDomainsSource + "."
+      );
+    } else {
+      showResult(
+        "unknown",
+        domain,
+        "Svetainės statusas neaiškus",
+        "Pagal turimus duomenis svetainė nerasta nei LPT legalių, nei NKSC nelegalių domenų sąrašuose.",
+        "Atitikmuo sąrašuose nerastas. NKSC patikra: " + illegalDomainsSource + "."
+      );
+    }
+
+  } catch (error) {
+    console.error("Tikrinimo klaida:", error);
+
+    stopProgress();
+    showResult(
+      "unknown",
+      domain,
+      "Nepavyko atnaujinti NKSC sąrašo",
+      "Šiuo metu nepavyko automatiškai gauti nelegalių domenų sąrašo. Bandykite dar kartą arba patikrinkite vėliau.",
+      "Automatinė NKSC sąrašo patikra nepavyko."
+    );
+
+  } finally {
+    checkBtn.disabled = false;
+    checkBtn.textContent = "Tikrinti";
+    isChecking = false;
+  }
+}
+
+function openInstallModal() {
+  const modal = document.getElementById("installModal");
+  const note = document.getElementById("installNote");
+
+  note.classList.remove("show");
+  note.textContent = "";
+
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+function closeInstallModal() {
+  const modal = document.getElementById("installModal");
+
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden", "true");
+}
+
+function showInstallGuide() {
+  const note = document.getElementById("installNote");
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    note.innerHTML = "Telefone atidarykite naršyklės meniu <strong>⋮</strong> ir pasirinkite <strong>Add to Home Screen</strong> arba <strong>Įtraukti į pradžios ekraną</strong>.";
+  } else {
+    note.innerHTML = "Kompiuteryje naudokite naršyklės meniu <strong>⋮</strong> ir ieškokite <strong>Apps / Programos</strong> arba <strong>Install this site as an app</strong>. Jeigu kompiuteris valdomas organizacijos, diegimas gali būti blokuojamas.";
+  }
+
+  note.classList.add("show");
+}
+
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  deferredPrompt = event;
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredPrompt = null;
+  closeInstallModal();
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  setIdleHeroLight();
+
+  document.getElementById("checkBtn").addEventListener("click", checkDomain);
+
+  document.getElementById("domainInput").addEventListener("keydown", (event) => {
+    if (event.key === "Enter") checkDomain();
+  });
+
+  document.getElementById("domainInput").addEventListener("input", () => {
+    hideInputError();
+  });
+
+  document.getElementById("installTrigger").addEventListener("click", openInstallModal);
+  document.getElementById("installClose").addEventListener("click", closeInstallModal);
+  document.getElementById("installGuide").addEventListener("click", showInstallGuide);
+
+  document.getElementById("installNow").addEventListener("click", async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      closeInstallModal();
+      return;
+    }
+
+    showInstallGuide();
+  });
+
+  document.getElementById("installModal").addEventListener("click", (event) => {
+    if (event.target.id === "installModal") closeInstallModal();
+  });
+});
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(() => console.log("SW registered"))
+      .catch((err) => console.log("SW error", err));
+  });
+}
+</script>
+</body>
+</html>
